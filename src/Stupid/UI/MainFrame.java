@@ -257,7 +257,7 @@ public class MainFrame extends javax.swing.JFrame {
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
         cboHeThong.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
-        cboHeThong.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "THỐNG KÊ", "SINH NHẬT", "HẾT HẠN", "GỬI EMAIL", "XUẤT EXCEL", "THOÁT" }));
+        cboHeThong.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "THỐNG KÊ", "HẾT HẠN", "XUẤT EXCEL", "THOÁT" }));
         cboHeThong.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cboHeThongActionPerformed(evt);
@@ -272,7 +272,7 @@ public class MainFrame extends javax.swing.JFrame {
                 {null, null, null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "MÃ KH", "HỌ TÊN", "SEX", "NGÀY SINH", "LIÊN HỆ", "SỐ CMND", "ĐƠN PHÍ", "CHI CHÚ", "ẢNH", ""
+                "MÃ KH", "HỌ TÊN", "SEX", "NGÀY SINH", "LIÊN HỆ", "SỐ CMND", "ĐƠN PHÍ", "CHI CHÚ", "ẢNH", "NGÀY TẠO"
             }
         ));
         tblCustomer.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
@@ -500,7 +500,7 @@ public class MainFrame extends javax.swing.JFrame {
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 60, Short.MAX_VALUE)
+            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 25, Short.MAX_VALUE)
         );
 
         jPanel6.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1), "MÃ KH :", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 14))); // NOI18N
@@ -632,7 +632,7 @@ public class MainFrame extends javax.swing.JFrame {
         jPanel11.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1), "GHI CHÚ : ", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 14))); // NOI18N
 
         txtGhiChu.setColumns(20);
-        txtGhiChu.setRows(5);
+        txtGhiChu.setRows(3);
         jScrollPane2.setViewportView(txtGhiChu);
 
         javax.swing.GroupLayout jPanel11Layout = new javax.swing.GroupLayout(jPanel11);
@@ -1376,6 +1376,42 @@ public class MainFrame extends javax.swing.JFrame {
 
         return check;
     }
+    public boolean deleteCustomer() {
+        boolean check = false;
+        try {
+
+            int r = tblCustomer.getSelectedRow();
+            String makh = tblCustomer.getValueAt(r, 0).toString().trim();
+            CustomerDAO cDAO = new CustomerDAO();
+            TicketDAO tDAO = new TicketDAO();
+            ArrayList<Ticket> dsTick = tDAO.loadList(makh);
+            if (dsTick.size() > 0) {
+                if (tDAO.deleteTicket2(makh)) {
+                    if (cDAO.deleteCustomer(makh)) {
+                        showTableCustomer();
+
+                        check = true;
+                    } else {
+                        check = false;
+                    }
+                }
+            } else {
+                if (cDAO.deleteCustomer(makh)) {
+                    showTableCustomer();
+
+                    check = true;
+                } else {
+                    check = false;
+                }
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            check = false;
+        }
+
+        return check;
+    }
 
     public boolean updateTicket() {
         boolean check = false;
@@ -1456,42 +1492,7 @@ public class MainFrame extends javax.swing.JFrame {
         return check;
     }
 
-    public boolean deleteCustomer() {
-        boolean check = false;
-        try {
-
-            int r = tblCustomer.getSelectedRow();
-            String makh = tblCustomer.getValueAt(r, 0).toString().trim();
-            CustomerDAO cDAO = new CustomerDAO();
-            TicketDAO tDAO = new TicketDAO();
-            ArrayList<Ticket> dsTick = tDAO.loadList(makh);
-            if (dsTick.size() > 0) {
-                if (tDAO.deleteTicket2(makh)) {
-                    if (cDAO.deleteCustomer(makh)) {
-                        showTableCustomer();
-
-                        check = true;
-                    } else {
-                        check = false;
-                    }
-                }
-            } else {
-                if (cDAO.deleteCustomer(makh)) {
-                    showTableCustomer();
-
-                    check = true;
-                } else {
-                    check = false;
-                }
-            }
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            check = false;
-        }
-
-        return check;
-    }
+    
 
     private static HSSFCellStyle createStyleForTitle(HSSFWorkbook workbook) {
         HSSFFont font = workbook.createFont();
